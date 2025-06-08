@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Header } from "../components/Header";
-import cardapioAcai from "../mocks/Produtos"; // seu mock
+import AcaiTradicional from "../mocks/Produtos";
+import AcaiTrufado from "../mocks/AcaiTrufado";
+import VitaminaAcai from "../mocks/Vitamina";
 import ComplementosModal from "../components/ComplementosModal";
 
 function Home() {
@@ -9,7 +11,6 @@ function Home() {
     const [endereco, setEndereco] = useState("");
     const [bairro, setBairro] = useState("");
     const [pagamento, setPagamento] = useState("");
-
     const [modalAberto, setModalAberto] = useState(false);
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
@@ -57,7 +58,59 @@ function Home() {
             <div className="p-4 mt-6 md:mx-20 space-y-8 min-h-screen">
                 <h1 className="text-2xl font-bold text-purple-700">Açaí Tradicional</h1>
 
-                {cardapioAcai.map((produto, i) => (
+                {AcaiTradicional.map((produto, i) => (
+                    <div
+                        key={i}
+                        onClick={() => abrirModal(produto)}
+                        className="flex justify-between gap-4 border-b pb-4 cursor-pointer hover:bg-purple-50 transition rounded p-2"
+                    >
+                        <div className="flex-1">
+                            {produto.destaque && (
+                                <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded text-xs inline-block mb-1">
+                                    🔥 O mais pedido
+                                </span>
+                            )}
+                            <h3 className="text-lg font-semibold">{produto.nome}</h3>
+                            <div className="text-sm text-gray-600">{produto.descricao}</div>
+                            <p className="text-base font-bold mt-1">R$ {produto.preco.toFixed(2)}</p>
+                        </div>
+                        <img
+                            src={produto.imagem}
+                            alt={produto.nome}
+                            className="w-24 h-24 object-cover rounded-md"
+                        />
+                    </div>
+                ))}
+
+                <h1 className="text-2xl font-bold text-purple-700">Açaí Trufado</h1>
+
+                {AcaiTrufado.map((produto, i) => (
+                    <div
+                        key={i}
+                        onClick={() => abrirModal(produto)}
+                        className="flex justify-between gap-4 border-b pb-4 cursor-pointer hover:bg-purple-50 transition rounded p-2"
+                    >
+                        <div className="flex-1">
+                            {produto.destaque && (
+                                <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded text-xs inline-block mb-1">
+                                    🔥 O mais pedido
+                                </span>
+                            )}
+                            <h3 className="text-lg font-semibold">{produto.nome}</h3>
+                            <div className="text-sm text-gray-600">{produto.descricao}</div>
+                            <p className="text-base font-bold mt-1">R$ {produto.preco.toFixed(2)}</p>
+                        </div>
+                        <img
+                            src={produto.imagem}
+                            alt={produto.nome}
+                            className="w-24 h-24 object-cover rounded-md"
+                        />
+                    </div>
+                ))}
+
+                <h1 className="text-2xl font-bold text-purple-700">Vitaminas</h1>
+
+                {VitaminaAcai.map((produto, i) => (
                     <div
                         key={i}
                         onClick={() => abrirModal(produto)}
