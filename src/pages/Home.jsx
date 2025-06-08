@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "../components/Header";
-import cardapioAcai from "../mocks/Produtos";
-import Carousel from "../components/Carousel";
+import cardapioAcai from "../mocks/Produtos"; // seu mock
 import ComplementosModal from "../components/ComplementosModal";
-import AlertModal from "../components/AlertModal";
 
 function Home() {
     const [carrinho, setCarrinho] = useState([]);
@@ -14,7 +12,6 @@ function Home() {
 
     const [modalAberto, setModalAberto] = useState(false);
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
-    const [mostrarAlerta, setMostrarAlerta] = useState(false);
 
     const abrirModal = (produto) => {
         setProdutoSelecionado(produto);
@@ -31,22 +28,7 @@ function Home() {
         const novoCarrinho = [...carrinho];
         novoCarrinho.splice(index, 1);
         setCarrinho(novoCarrinho);
-
     };
-
-    // Desabilitar scroll quando o modal de alerta estiver aberto
-    useEffect(() => {
-        if (mostrarAlerta) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-
-        // Cleanup para caso o componente desmonte com modal aberto
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [mostrarAlerta]);
 
     const total = carrinho.reduce((acc, item) => acc + item.preco, 0);
 
@@ -59,115 +41,116 @@ function Home() {
             .join("\n\n");
 
         const mensagem = encodeURIComponent(
-            `🍧 Pedido de Açaí:\n${lista}\n\nTotal: R$${total},00\n\nNome: ${nome}\nEndereço: ${endereco}\nBairro: ${bairro}\nPagamento: ${pagamento}`
+            `🍧 Pedido de Açaí:\n${lista}\n\nTotal: R$${total.toFixed(2)}\n\nNome: ${nome}\nEndereço: ${endereco}\nBairro: ${bairro}\nPagamento: ${pagamento}`
         );
 
         const numero = "5511967759989";
         window.open(`https://wa.me/${numero}?text=${mensagem}`, "_blank");
     };
 
+    const isFormValido = nome && endereco && bairro && pagamento && carrinho.length > 0;
+
     return (
         <>
             <Header />
-            <div className="mx-4 md:mx-20 font-sans mt-6">
-                <h1 className="text-2xl font-bold pl-4 pt-4">Faça seu Pedido!</h1>
-                <Carousel cardapioAcai={cardapioAcai} adicionar={abrirModal} />
 
-                <h2 className="text-xl font-semibold mb-2">🛒 Carrinho</h2>
-                <ul className="mb-4">
-                    {carrinho.map((item, i) => (
-                        <li key={i} className="border-b py-2 flex justify-between items-center">
-                            <span>
-                                {item.nome} - R${item.preco.toFixed(2)}
-                                {item.frutas?.length || item.acompanhamentos?.length || item.extras?.length ? (
+            <div className="p-4 mt-6 md:mx-20 space-y-8 min-h-screen">
+                <h1 className="text-2xl font-bold text-purple-700">Açaí Tradicional</h1>
+
+                {cardapioAcai.map((produto, i) => (
+                    <div
+                        key={i}
+                        onClick={() => abrirModal(produto)}
+                        className="flex justify-between gap-4 border-b pb-4 cursor-pointer hover:bg-purple-50 transition rounded p-2"
+                    >
+                        <div className="flex-1">
+                            {produto.destaque && (
+                                <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded text-xs inline-block mb-1">
+                                    🔥 O mais pedido
+                                </span>
+                            )}
+                            <h3 className="text-lg font-semibold">{produto.nome}</h3>
+                            <div className="text-sm text-gray-600">{produto.descricao}</div>
+                            <p className="text-base font-bold mt-1">R$ {produto.preco.toFixed(2)}</p>
+                        </div>
+                        <img
+                            src={produto.imagem}
+                            alt={produto.nome}
+                            className="w-24 h-24 object-cover rounded-md"
+                        />
+                    </div>
+                ))}
+
+                {/* Carrinho */}
+                <div>
+                    <h2 className="text-xl font-semibold mb-2">🛒 Carrinho</h2>
+                    <ul className="mb-4">
+                        {carrinho.map((item, i) => (
+                            <li key={i} className="border-b py-2 flex justify-between items-center">
+                                <span>
+                                    {item.nome} - R${item.preco.toFixed(2)}
                                     <div className="text-sm text-gray-600">
                                         {item.frutas?.length > 0 && <div>Frutas: {item.frutas.join(", ")}</div>}
                                         {item.acompanhamentos?.length > 0 && <div>Acompanhamentos: {item.acompanhamentos.join(", ")}</div>}
                                         {item.extras?.length > 0 && <div>Extras: {item.extras.map(e => e.nome).join(", ")}</div>}
                                     </div>
-                                ) : null}
-                            </span>
-                            <button
-                                onClick={() => removerItem(i)}
-                                className="text-red-500 text-sm hover:underline"
-                            >
-                                Remover
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                                </span>
+                                <button
+                                    onClick={() => removerItem(i)}
+                                    className="text-red-500 text-sm hover:underline"
+                                >
+                                    Remover
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="font-bold mb-4">Total: R${total.toFixed(2)}</p>
+                </div>
 
-
-                <p className="font-bold mb-4">Total: R${total}</p>
-
-                <h2 className="text-xl font-semibold mt-6 mb-2">Informações de Entrega</h2>
-
-                <input
-                    type="text"
-                    placeholder="Seu nome"
-                    className="w-full mb-2 p-2 rounded border focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Endereço"
-                    className="w-full mb-2 p-2 rounded border focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                    value={endereco}
-                    onChange={(e) => setEndereco(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Bairro"
-                    className="w-full mb-2 p-2 rounded border focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                    value={bairro}
-                    onChange={(e) => setBairro(e.target.value)}
-                />
-
-                <select
-                    className="w-full mb-4 p-2 rounded border focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                    value={pagamento}
-                    onChange={(e) => setPagamento(e.target.value)}
-                >
-                    <option value="">Selecione a forma de pagamento</option>
-                    <option value="Cartão Crédito">Cartão Crédito</option>
-                    <option value="Débito">Débito</option>
-                    <option value="Dinheiro">Dinheiro</option>
-                    <option value="Pix">Pix</option>
-                </select>
+                {/* Formulário */}
+                <div className="space-y-3">
+                    <input
+                        type="text"
+                        placeholder="Seu nome"
+                        className="w-full p-2 rounded border focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Endereço"
+                        className="w-full p-2 rounded border focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        value={endereco}
+                        onChange={(e) => setEndereco(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Bairro"
+                        className="w-full p-2 rounded border focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        value={bairro}
+                        onChange={(e) => setBairro(e.target.value)}
+                    />
+                    <select
+                        className="w-full p-2 rounded border focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        value={pagamento}
+                        onChange={(e) => setPagamento(e.target.value)}
+                    >
+                        <option value="">Forma de pagamento</option>
+                        <option value="Cartão Crédito">Cartão Crédito</option>
+                        <option value="Cartão Débito">Cartão Débito</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Pix">Pix</option>
+                    </select>
+                </div>
 
                 <button
-                    onClick={() => {
-                        if (
-                            carrinho.length === 0 ||
-                            !nome.trim() ||
-                            !endereco.trim() ||
-                            !bairro.trim() ||
-                            !pagamento.trim()
-                        ) {
-                            setMostrarAlerta(true);
-                            return;
-                        }
-                        finalizarPedido();
-                    }}
-                    className={`p-3 rounded-xl w-full font-bold text-white mb-4 ${carrinho.length === 0 ||
-                            !nome.trim() ||
-                            !endereco.trim() ||
-                            !bairro.trim() ||
-                            !pagamento.trim()
-                            ? "bg-gray-500 cursor-not-allowed"
-                            : "bg-green-500 hover:bg-green-600"
-                        }`}
+                    onClick={finalizarPedido}
+                    disabled={!isFormValido}
+                    className={`p-3 w-full rounded-xl font-bold text-white transition 
+            ${isFormValido ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"}`}
                 >
                     Finalizar Pedido no WhatsApp
                 </button>
-
-                {mostrarAlerta && (
-                    <AlertModal
-                        mensagem="Adicione um item ao carrinho, preencha as informações de entrega e pagamento."
-                        onClose={() => setMostrarAlerta(false)} // fecha o modal
-                    />
-                )}
             </div>
 
             {modalAberto && produtoSelecionado && (

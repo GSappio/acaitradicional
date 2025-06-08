@@ -16,6 +16,7 @@ const cardapioAcai = [
     id: 2,
     nome: "Açaí Tradicional Premium 550ml",
     preco: 15,
+    destaque: false, // 🔥 Destaque
     descricao: (
       <>Açaí premium com <strong>80% de polpa pura</strong>, 2 frutas frescas e 3 acompanhamentos deliciosos. Perfeito para quem quer uma dose extra de sabor e energia!</>
     ),
@@ -43,6 +44,7 @@ const cardapioAcai = [
     id: 5,
     nome: "Açaí Trufado Premium 550ml",
     preco: 17,
+    destaque: false, // 🔥 Destaque
     descricao: (
       <>Açaí premium com <strong>80% de polpa pura</strong>, creme <strong>trufado de chocolate crocante</strong>. Escolha 2 frutas e 3 acompanhamentos. Perfeito para quem quer mais sabor e cremosidade!</>
     ),
@@ -72,6 +74,5 @@ const cardapioAcai = [
     imagem: vitaminaAcai,
   },
 ];
-
 
 export default cardapioAcai;
